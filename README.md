@@ -59,43 +59,42 @@ python3 main.py
 ## 📋 Changelog
 
 ### **v1.0.0 (Current)**
-- ✅ Initial release  
-- ✅ All core translation methods  
-- ✅ Theme support  
-- ✅ 100+ language support  
+- ✅ Theme support
+- ✅ 100+ language support
+- ✅ All core translation methods
 
 ---
 
 ## 📋 TODO / Upcoming Features
 
 ### **High Priority**
-- 🔲 Pronunciation display
-- ✅ Smarter auto-detect language
-- ✅ Settings Page
+- [x] Smarter auto-detect language
+- [x] Settings Page
+- [ ] Pronunciation display
 
 ### **Settings Page Features**
-- ✅ Proxy configuration
-- ✅ Startup window size
-- ✅ Service URLs
-- ✅ User agent customization
-- 🔲 Timeout settings
-- 🔲 HTTP/2 toggle
-- ✅ Default languages
+- [x] Proxy configuration
+- [x] Startup window size
+- [x] Service URLs
+- [x] User agent customization
+- [x] Timeout settings
+- [x] Default languages
+- [ ] HTTP/2 toggle
 
 ### **Helper Methods**
-- ✅ Text cleaning utilities (`_`, and other untranslatable chars)
-- 🔲 Translation history
+- [x] Text cleaning utilities (`_`, and other untranslatable chars)
+- [ ] Translation history
 
 ### **Additional Features**
-- 🔲 About page
-- 🔲 Offline Mode
-- 🔲 Keyboard shortcuts
-- 🔲 Additional translation engines
-- 🔲 Translation memory
-- 🔲 Document Translation (PDF, DOC, DOCX, TXT)
-- 🔲 Voice Translation (Speech-to-text)
-- 🔲 Camera Translation (real-time OCR)
-- 🔲 Conversation Mode (bilingual live translation)
+- [ ] About page
+- [ ] Offline Mode
+- [ ] Keyboard shortcuts
+- [ ] Additional translation engines
+- [ ] Translation memory
+- [ ] Document Translation (PDF, DOC, DOCX, TXT)
+- [ ] Voice Translation (Speech-to-text)
+- [ ] Camera Translation (real-time OCR)
+- [ ] Conversation Mode (bilingual live translation)
 
 ---
 
