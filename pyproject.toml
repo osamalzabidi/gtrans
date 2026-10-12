@@ -8,7 +8,8 @@ authors = [
     { name = "Osama Mohammed", email = "support.osamalzabidi@gmail.com" }
 ]
 dependencies = [
-    "flet>=1.0.0"
+    "flet>=1.0.0",
+    "googletrans>=4.0.2"
 ]
 
 [dependency-groups]
