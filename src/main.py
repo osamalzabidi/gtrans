@@ -4,7 +4,7 @@
 
 import flet as ft
 
-from src.gtrans.home_page import GoogleTranslateApp
+from gtrans.home_page import GoogleTranslateApp
 
 
 def main():
