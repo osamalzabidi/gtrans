@@ -88,6 +88,7 @@ jobs:
           & $iscc `
             "/DMyAppVersion=${{ steps.version.outputs.value }}" `
             "/DMySourcePath=${{ steps.build.outputs.output-path }}" `
+            "/DMyRepoRoot=${{ github.workspace }}" `
             ".github\installer\windows.iss"
 
       - name: Upload Windows installer

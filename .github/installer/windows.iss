@@ -1,6 +1,6 @@
 ; Inno Setup script for GTrans
 ; Invoked from the workflow as:
-;   ISCC.exe /DMyAppVersion=<version> /DMySourcePath=<raw flet build output> windows.iss
+;   ISCC.exe /DMyAppVersion=<version> /DMySourcePath=<raw flet build output> /DMyRepoRoot=<repo root> windows.iss
 
 #define MyAppName        "GTrans"
 #define MyAppPublisher   "osamalzabidi"
@@ -15,6 +15,11 @@
   #error MySourcePath must be defined via /DMySourcePath=...
 #endif
 
+#ifndef MyRepoRoot
+  ; Fallback for local testing: assume .iss lives at .github\installer\
+  #define MyRepoRoot "..\.."
+#endif
+
 [Setup]
 AppId={{82fc94c6-080d-4bfe-86bd-f9d6e3f4594e}
 AppName={#MyAppName}
@@ -26,7 +31,7 @@ AppSupportURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
-OutputDir=dist
+OutputDir={#MyRepoRoot}\dist
 OutputBaseFilename=GTrans-{#MyAppVersion}-Setup
 Compression=lzma2
 SolidCompression=yes
@@ -34,8 +39,8 @@ WizardStyle=modern
 ArchitecturesInstallIn64BitMode=x64compatible
 ArchitecturesAllowed=x64compatible
 
-; Point this at your real .ico — remove the line if you don't have one yet.
-SetupIconFile=src\assets\icon.ico
+; Absolute path so ISCC doesn't look in .github\installer\src\...
+SetupIconFile={#MyRepoRoot}\src\assets\icon.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 
 [Languages]
@@ -45,7 +50,6 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-; {#MySourcePath} is the absolute path to the raw flet build output on the runner.
 Source: "{#MySourcePath}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
