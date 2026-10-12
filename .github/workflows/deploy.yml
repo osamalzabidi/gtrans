@@ -51,11 +51,18 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download all build artifacts
-        uses: actions/download-artifact@v5
-        with:
-          path: release-assets
-          merge-multiple: true
+      - name: Download all artifacts (raw, no extraction)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh run download ${{ github.run_id }} --dir release-assets
+          # gh downloads each artifact into its own subdirectory named after the artifact;
+          # flatten them so every file sits directly in release-assets/
+          find release-assets -mindepth 2 -type f -exec mv -t release-assets {} +
+          find release-assets -mindepth 1 -type d -empty -delete
+
+      - name: Verify files
+        run: ls -la release-assets
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
