@@ -55,9 +55,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh run download ${{ github.run_id }} --dir release-assets
-          # gh downloads each artifact into its own subdirectory named after the artifact;
-          # flatten them so every file sits directly in release-assets/
+          gh run download ${{ github.run_id }} \
+            -R ${{ github.repository }} \
+            --dir release-assets
+
+          # gh puts each artifact in its own subdirectory; flatten them
           find release-assets -mindepth 2 -type f -exec mv -t release-assets {} +
           find release-assets -mindepth 1 -type d -empty -delete
 
