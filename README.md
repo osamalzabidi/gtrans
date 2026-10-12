@@ -13,6 +13,24 @@ A sophisticated desktop translation companion that brings the power of Google Tr
 
 ---
 
+## 💡 Why "GTrans"?
+
+The name **GTrans** is a deliberate, compact alias for **Google Translate** — the tool this app is built around. It reads naturally (you can say it in one syllable-plus), fits cleanly into a window title, a taskbar tooltip, and an installer filename, and it signals exactly what the app does without pretending to be an official Google product.
+
+The "G" carries the lineage, the "Trans" carries the function.
+
+---
+
+## 🎯 Why I Built This
+
+Google Translate is excellent. Its **web interface**, however, has one nagging problem: every phrase you translate becomes a browser history entry. If you translate something private — a message, a résumé line, a medical note — that text now lives in your browser's history, autocomplete suggestions, and any synced profile you're signed into. Even in an incognito window, you're still dealing with a browser tab, an account prompt, a cookie banner, and a web page that reloads when your Wi-Fi hiccups.
+
+**GTrans is the translation experience without the browser baggage.** It's a small native desktop app that talks directly to Google's translation endpoint, so what you type stays between you and the service — no history, no tabs, no clutter, no sign-in.
+
+**Bottom line:** GTrans is for people who use Google Translate several times a day and don't want a browser tab, a history entry, or an account prompt every time. It's the same service, with the web layer removed.
+
+---
+
 ## 🚀 Quick Start
 
 ### **Manual Setup & Installation**
