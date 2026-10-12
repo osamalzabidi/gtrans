@@ -1,0 +1,151 @@
+name: Build & Release GTrans
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Release tag (e.g. v1.0.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: linux
+            runner: ubuntu-latest
+          - target: windows
+            runner: windows-latest
+          - target: macos
+            runner: macos-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Compute version
+        id: version
+        shell: bash
+        run: echo "value=${TAG#v}" >> "$GITHUB_OUTPUT"
+        env:
+          TAG: ${{ inputs.tag_name }}
+
+      - name: Build ${{ matrix.target }} (raw output)
+        id: build
+        uses: flet-dev/flet-build-action@v1
+        with:
+          target: ${{ matrix.target }}
+          runner-python-version: "3.14"
+          bundled-python-version: "3.14"
+          build-number: ${{ github.run_number }}
+          build-version: ${{ steps.version.outputs.value }}
+          archive-output: false
+
+      # ─────────────────────────── LINUX ───────────────────────────
+      - name: Install packaging tools (Linux)
+        if: matrix.target == 'linux'
+        run: sudo apt-get update && sudo apt-get install -y dpkg-dev libfuse2
+
+      - name: Package Linux (.deb + .AppImage)
+        if: matrix.target == 'linux'
+        shell: bash
+        run: |
+          chmod +x .github/scripts/build-deb.sh .github/scripts/build-appimage.sh
+          .github/scripts/build-deb.sh \
+            "${{ steps.build.outputs.output-path }}" \
+            "${{ steps.version.outputs.value }}"
+          .github/scripts/build-appimage.sh \
+            "${{ steps.build.outputs.output-path }}" \
+            "${{ steps.version.outputs.value }}"
+
+      - name: Upload Linux packages
+        if: matrix.target == 'linux'
+        uses: actions/upload-artifact@v7
+        with:
+          name: gtrans-linux
+          path: |
+            dist/*.deb
+            dist/*.AppImage
+          if-no-files-found: error
+
+      # ────────────────────────── WINDOWS ──────────────────────────
+      - name: Install Inno Setup (Windows)
+        if: matrix.target == 'windows'
+        shell: pwsh
+        run: choco install innosetup --no-progress -y
+
+      - name: Package Windows installer (.exe)
+        if: matrix.target == 'windows'
+        shell: pwsh
+        run: |
+          $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          & $iscc `
+            "/DMyAppVersion=${{ steps.version.outputs.value }}" `
+            "/DMySourcePath=${{ steps.build.outputs.output-path }}" `
+            ".github\installer\windows.iss"
+
+      - name: Upload Windows installer
+        if: matrix.target == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          name: gtrans-windows
+          path: dist/*.exe
+          if-no-files-found: error
+
+      # ─────────────────────────── MACOS ───────────────────────────
+      - name: Package macOS disk image (.dmg)
+        if: matrix.target == 'macos'
+        shell: bash
+        run: |
+          mkdir -p dist
+          APP_PATH=$(find "${{ steps.build.outputs.output-path }}" \
+                       -maxdepth 5 -type d -name "*.app" | head -n1)
+          if [ -z "$APP_PATH" ]; then
+            echo "::error::No .app bundle found under ${{ steps.build.outputs.output-path }}"
+            exit 1
+          fi
+          echo "Found app: $APP_PATH"
+          hdiutil create \
+            -volname "GTrans" \
+            -srcfolder "$APP_PATH" \
+            -ov -format UDZO \
+            "dist/GTrans-${{ steps.version.outputs.value }}.dmg"
+
+      - name: Upload macOS disk image
+        if: matrix.target == 'macos'
+        uses: actions/upload-artifact@v7
+        with:
+          name: gtrans-macos
+          path: dist/*.dmg
+          if-no-files-found: error
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all packaged artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Verify files
+        run: ls -la release-assets
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag_name }}
+          name: ${{ inputs.tag_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: release-assets/*
+          
